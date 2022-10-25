@@ -1,0 +1,9 @@
+prefix=@@PREFIX@@
+includedir=${prefix}/include
+
+Name: ffhjkcodec
+Description: FFmpeg version of Hjk Codec SDK headers
+Version: 0.0.0.1
+Libs: -L${prefix}/lib -lffhjkcodec
+Libs.private:
+Cflags: -I${includedir}

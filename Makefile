@@ -17,14 +17,16 @@ OBJ_SOVERSION = 1
 
 OBJ_SO_LDFLAG=-Wl,-soname=$(OBJ_LIBNAME).so.$(OBJ_SOVERSION)
 
-PREFIX ?= /usr/local
+#PREFIX ?= `pwd`/install
+PREFIX ?= /home/chen/work/opensource/nvdia/ffmpeg/hjk-codec-library/install
 INCLUDE_PATH ?= include/ffhjkcodec
 LIBRARY_PATH ?= lib
 
 INSTALL_INCLUDE_PATH = $(DESTDIR)$(PREFIX)/$(INCLUDE_PATH)
 INSTALL_LIBRARY_PATH = $(DESTDIR)$(PREFIX)/$(LIBRARY_PATH)
 
-INSTALL ?= cp -a
+INSTALL ?= install
+SED = sed
 
 # validate gcc version for use fstack-protector-strong
 MIN_GCC_VERSION = "4.9"
@@ -63,9 +65,9 @@ OBJ_STATIC = $(OBJ_LIBNAME).$(STATIC)
 
 SHARED_CMD = $(CC) -shared -o
 
-.PHONY: all shared static tests clean install
+.PHONY: all shared static tests pkgconfig clean install
 
-all: create_dir shared static tests
+all: create_dir shared static tests pkgconfig
 	$(warning "abcd")
 create_dir: 
 	mkdir -p $(COMPILER_DIR)
@@ -78,6 +80,13 @@ tests: $(OBJ_TEST)
 
 test: tests
 	./$(OBJ_TEST)
+
+pkgconfig:
+ifeq ($(OS),Windows_NT)
+	$(SED) 's#@@PREFIX@@#$(shell cygpath -m ${PREFIX})#' ffhjkcodec.pc.in > ffhjkcodec.pc
+else
+	$(SED) 's#@@PREFIX@@#$(PREFIX)#' ffhjkcodec.pc.in > ffhjkcodec.pc
+endif
 
 .c.o:
 	$(warning "abcd" $^)
@@ -118,9 +127,14 @@ $(OBJ_SHARED): $(OBJ_SHARED_SO)
 #install
 #ffhjkcodec
 install-ffhjkcodec:
-	mkdir -p $(INSTALL_LIBRARY_PATH) $(INSTALL_INCLUDE_PATH)
-	$(INSTALL) $(OBJ_INC) $(INSTALL_INCLUDE_PATH)
-	$(INSTALL) $(COMPILER_DIR)/$(OBJ_SHARED) $(COMPILER_DIR)/$(OBJ_SHARED_SO) $(COMPILER_DIR)/$(OBJ_SHARED_VERSION) $(INSTALL_LIBRARY_PATH)
+	install -m 0755 -d $(INSTALL_LIBRARY_PATH) $(INSTALL_INCLUDE_PATH)
+	install -m 0644 $(OBJ_INC) $(INSTALL_INCLUDE_PATH)
+	#$(INSTALL) $(COMPILER_DIR)/$(OBJ_SHARED) $(COMPILER_DIR)/$(OBJ_SHARED_SO) $(COMPILER_DIR)/$(OBJ_SHARED_VERSION) $(INSTALL_LIBRARY_PATH)
+	install -m 0644 $(COMPILER_DIR)/$(OBJ_SHARED) $(INSTALL_LIBRARY_PATH)
+	install -m 0644 $(COMPILER_DIR)/$(OBJ_SHARED_SO) $(INSTALL_LIBRARY_PATH)
+	install -m 0644 $(COMPILER_DIR)/$(OBJ_SHARED_VERSION) $(INSTALL_LIBRARY_PATH)
+	install -m 0755 -d $(INSTALL_LIBRARY_PATH)/pkgconfig
+	install -m 0644 ffhjkcodec.pc $(INSTALL_LIBRARY_PATH)/pkgconfig
 
 install: install-ffhjkcodec
 
