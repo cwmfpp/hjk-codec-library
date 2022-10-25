@@ -18,7 +18,8 @@ OBJ_SOVERSION = 1
 OBJ_SO_LDFLAG=-Wl,-soname=$(OBJ_LIBNAME).so.$(OBJ_SOVERSION)
 
 #PREFIX ?= `pwd`/install
-PREFIX ?= /home/chen/work/opensource/nvdia/ffmpeg/hjk-codec-library/install
+#PREFIX ?= /home/chen/work/opensource/nvdia/ffmpeg/hjk-codec-library/install
+PREFIX ?= $(CURDIR)/_install
 INCLUDE_PATH ?= include/ffhjkcodec
 LIBRARY_PATH ?= lib
 
@@ -130,6 +131,7 @@ install-ffhjkcodec:
 	$(INSTALL) -m 0755 -d $(INSTALL_LIBRARY_PATH) $(INSTALL_INCLUDE_PATH)
 	$(INSTALL) -m 0644 $(OBJ_INC) $(INSTALL_INCLUDE_PATH)
 	$(INSTALL) -m 0644 $(COMPILER_DIR)/$(OBJ_SHARED) $(INSTALL_LIBRARY_PATH)
+	$(INSTALL) -m 0644 $(COMPILER_DIR)/$(OBJ_STATIC) $(INSTALL_LIBRARY_PATH)
 	$(INSTALL) -m 0644 $(COMPILER_DIR)/$(OBJ_SHARED_SO) $(INSTALL_LIBRARY_PATH)
 	$(INSTALL) -m 0644 $(COMPILER_DIR)/$(OBJ_SHARED_VERSION) $(INSTALL_LIBRARY_PATH)
 	$(INSTALL) -m 0755 -d $(INSTALL_LIBRARY_PATH)/pkgconfig
